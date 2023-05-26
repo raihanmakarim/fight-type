@@ -1,113 +1,198 @@
-import Image from 'next/image'
+"use client";
+import React, {
+  useState, useEffect, useRef 
+} from "react";
+import HealthBar from "./component/HealthBar";
+const RANDOM_QUOTE_API_URL = "https://api.quotable.io/random?minLength=200&maxLength=240";
 
-export default function Home() {
+
+
+const Word = React.memo(function Word(props) {
+  const {
+    word, activeWord, correct 
+  } = props;
+
+
+
+  let className = "word";
+  if (activeWord) {
+    className += " text-blue-500";
+  }
+  if (correct) {
+    className += " text-green-500";
+  }
+  if (!correct) {
+    className += " text-black";
+  }
+
+  return <span className={`quote-display ${className}`}>{word} </span>;
+});
+
+
+// const Timer = React.memo(function Timer() {
+//   const [ seconds, setSeconds ] = useState(0);
+//   const [speed , setSpeed] = useState(0);
+//   const [isRunning, setIsRunning] = useState(false);
+//   const [wordCount, setWordCount] = useState(0);
+//   const [correctWordCount, setCorrectWordCount] = useState(0);
+//   const [accuracy, setAccuracy] = useState(0);
+//   const [wpm, setWpm] = useState(0);
+
+  
+//   return <div className="timer">{seconds}</div>;
+// });
+
+
+
+
+
+
+const TypeFastGame = () => {
+  const [ quoteInput, setQuoteInput ] = useState("");
+  
+  const quoteInputElement = useRef(null);
+  const [ activeWordIndex, setActiveWordIndex ] = useState(0);
+  const quoteContentRef = useRef("");
+  const correctWordsRef = useRef([]);
+  const enemyHp = useRef(100);
+
+
+  const [ myHp, setMyHp ] = useState(100);
+
+  const decreaseHp = () => {
+    const threshold = 10;
+
+    const interval = setInterval(() => {
+      setMyHp((prevHp) => {
+        if (prevHp <= 0) {
+          clearInterval(interval);
+          return prevHp;
+        }
+
+        const deduction = Math.min(Math.floor(Math.random() * threshold) + 1, prevHp);
+        const newHp = prevHp - deduction;
+        return newHp;
+      });
+    }, Math.floor(Math.random() * (3500 - 2500 + 1)) + 2500);
+  };
+
+
+  
+  const [ gameOver, setGameOver ] = useState(false);
+
+  const resetGame = () => {
+    setActiveWordIndex(0);
+    correctWordsRef.current = [];
+    setQuoteInput("");
+    setMyHp(100);
+    enemyHp.current = 100;
+    setGameOver(false);
+    setStartGame(false);
+    getRandomQuote()
+
+  };
+
+
+  const [ startGame, setStartGame ] = useState(false);
+
+  useEffect(() => {
+    if (enemyHp.current <= 0 || myHp <= 0) {
+      setGameOver(true);
+    }
+  }, [ enemyHp.current, myHp ]);
+
+  useEffect(() => {
+    if (gameOver) {
+      resetGame();
+    }
+  }, [ gameOver ]);
+
+
+  const displayText = () => {
+    const text = quoteContentRef.current?.split(" ");
+    if (!text) {
+      return null;
+    }
+    return text.map((word, index) => (
+      <Word
+        key={index}
+        word={word}
+        activeWord={index === activeWordIndex}
+        correct={correctWordsRef.current[index]}
+      />
+    ));
+  };
+
+
+  const getRandomQuote = async () => {
+    try {
+      const response = await fetch(RANDOM_QUOTE_API_URL);
+      const data = await response.json();
+      return Promise.resolve(data.content).then((content) => {
+        quoteContentRef.current = content;
+      })
+    }
+    catch (error) {
+      console.error("Error fetching random quote:", error);
+      return Promise.reject(error);
+    }
+  };
+
+
+  useEffect(() => {
+    getRandomQuote()
+
+  }, []);
+
+  
+  console.log("quoteInput", quoteInput);
+
+
+  const handleUserInput = (value) => {
+    if (value.endsWith(" ")) {
+      const lastWord = quoteContentRef.current.split(" ")[activeWordIndex];
+      if (lastWord === value.trim()) {
+        setActiveWordIndex((prevIndex) => prevIndex + 1);
+        correctWordsRef.current = [ ...correctWordsRef.current, value.trim() ];
+        enemyHp.current -= 10;
+      }
+      setQuoteInput("");
+    }
+    else {
+     
+      setQuoteInput(value);
+    }
+  };
+
+
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <p className="fixed left-0 top-0 flex w-full justify-center border-b border-gray-300 bg-gradient-to-b from-zinc-200 pb-6 pt-8 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit lg:static lg:w-auto  lg:rounded-xl lg:border lg:bg-gray-200 lg:p-4 lg:dark:bg-zinc-800/30">
-          Get started by editing&nbsp;
-          <code className="font-mono font-bold">app/page.js</code>
-        </p>
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-          <a
-            className="pointer-events-none flex place-items-center gap-2 p-8 lg:pointer-events-auto lg:p-0"
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className="dark:invert"
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
+    <div className="wrapper">
+      <div className="flex justify-center items-center font-bold bg-yellow-400	 gap-12 h-20 border-2 border-black"> 
+        <HealthBar color="red" health={enemyHp.current} />
+
+        <h1 className="text-black text-2xl  ">VS</h1>
+        {/* <h1 className="text-green-500 ">{myHp}</h1> */}
+        <HealthBar color="green" health={myHp} />
       </div>
+     
 
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px]">
-        <Image
-          className="relative dark:drop-shadow-[0_0_0.3rem_#ffffff70] dark:invert"
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
+
+      <div className="container">
+        <p className="quote">{displayText()}</p>
+        <input
+      
+          id="quoteInput"
+          type="text"
+          className="quote-input"
+          ref={quoteInputElement}
+          autoFocus
+          value={quoteInput}
+          onChange={(e) => handleUserInput(e.target.value)}
+          style={{ color: "black" }}
+        ></input>{" "}
       </div>
+    </div>
+  );
+};
 
-      <div className="mb-32 grid text-center lg:mb-0 lg:grid-cols-4 lg:text-left">
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Docs{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800 hover:dark:bg-opacity-30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Learn{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Learn about Next.js in an interactive course with&nbsp;quizzes!
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Templates{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Explore the Next.js 13 playground.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className="group rounded-lg border border-transparent px-5 py-4 transition-colors hover:border-gray-300 hover:bg-gray-100 hover:dark:border-neutral-700 hover:dark:bg-neutral-800/30"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={`mb-3 text-2xl font-semibold`}>
-            Deploy{' '}
-            <span className="inline-block transition-transform group-hover:translate-x-1 motion-reduce:transform-none">
-              -&gt;
-            </span>
-          </h2>
-          <p className={`m-0 max-w-[30ch] text-sm opacity-50`}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
-}
+export default TypeFastGame;
