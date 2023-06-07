@@ -11,17 +11,17 @@ const page = () => (
         <h2 className="text-3xl font-bold">Welcome to Fight Type</h2>
         <p className="mb-4 font-bold">Choose Your Opponent</p>
 
-        <div className="flex justify-between gap-2 w-1/2 h-5/6 mb-4">
+        <div className="flex justify-between gap-2 w-5/6 h-5/6 mb-4">
       
               
 
-          <Link href="/fight" className='w-1/2 h-4/6'> 
+          <Link href="/fight" className='w-10/12 h-4/6'> 
             <button className="w-full h-full px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg">
               Againts NPC
             </button>
           </Link>
           
-          <Link href="/" className='w-1/2 h-4/6' > 
+          <Link href="/" className='w-10/12 h-4/6' > 
             <button className="w-full h-full px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg">
               Againts Player
             </button>
