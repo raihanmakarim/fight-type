@@ -124,7 +124,7 @@ const TypeFastGame = () => {
     
     const channel = pusherClient.subscribe('game-channel');
     channel.bind('enemy-health-update', (data) => {
-      console.log("data",data)
+      console.log("datwwa",data)
       const updatedHp = data.health;
       enemyHp.current = updatedHp;
     });
