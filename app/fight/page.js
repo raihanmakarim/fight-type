@@ -254,6 +254,15 @@ const TypeFastGame = () => {
 
   
   const resetGame = () => {
+    if( enemyHp.current <= 0 && myHp > 0){
+      setWin("YOU WIN")
+    }
+    else if(myHp <= 0 && enemyHp.current > 0){
+      setWin("YOU LOSE, YOU SUCK!!")
+    }
+    else if (enemyHp.current <= 0 && myHp <= 0) {
+      setWin("DRAW")
+    }
     setActiveWordIndex(0);
     correctWordsRef.current = [];
     setQuoteInput("");
@@ -264,15 +273,7 @@ const TypeFastGame = () => {
     setTimeoutValue(3);
     setLastWordLength(0);
     setOpenModal(true);
-    if( enemyHp.current <= 0 && myHp > 0){
-      setWin("YOU WIN")
-    }
-    else if(myHp <= 0 && enemyHp.current > 0){
-      setWin("YOU LOSE, YOU SUCK!!")
-    }
-    else if (enemyHp.current <= 0 && myHp <= 0) {
-      setWin("DRAW")
-    }
+   
 
   };
 
@@ -358,21 +359,21 @@ const TypeFastGame = () => {
               setDifficulty(4); 
               setOpenModal(false) 
             } }
-              className="w-5/12 h-20 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-lg">
+            className="w-5/12 h-20 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white font-semibold rounded-lg">
               Medium
             </button>
             <button onClick={() => {
               setDifficulty(6); 
               setOpenModal(false) 
             } }
-            className="w-5/12 h-20 px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg">
+              className="w-5/12 h-20 px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg">
               Hard
             </button>
             <button onClick={() => {
               setDifficulty(10); 
               setOpenModal(false)
             } }
-            className="w-5/12 h-20 px-4 py-2 bg-black  text-white font-semibold rounded-lg">
+              className="w-5/12 h-20 px-4 py-2 bg-black  text-white font-semibold rounded-lg">
               NO WAY
             </button>
             
