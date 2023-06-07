@@ -8,7 +8,7 @@ import idle from "../../public/idle.png";
 import prepare_jab from "../../public/prepare_jab.png";
 import jab from "../../public/jab.png";
 import axios from "axios";
-
+import process from "process";
 import Image from 'next/image';
 import Opponent_iddle from "../../public/Opponent_iddle.png";
 import Opponent_jab from "../../public/Opponent_jab.png";
@@ -114,9 +114,9 @@ const TypeFastGame = () => {
 
 
 
-  const channelRef = useRef(null);
+  //   const channelRef = useRef(null);
 
-  const [ hp , setHp ] = useState(100);
+  //   const [ hp , setHp ] = useState(100);
 
 
   useEffect(() => {
@@ -230,16 +230,16 @@ const TypeFastGame = () => {
       const timer = setInterval(() => {
         setTimeoutValue((prevValue) => prevValue - 1);
       }, 1000);
-
+      if (!startGame) {
+        getRandomQuote();
+      }
       return () => {
         clearInterval(timer);
+        return undefined; 
       };
     }
-
-    if(!startGame){
-      getRandomQuote()
-    }
   }, [ startGame, timeoutValue ]);
+
 
   useEffect(() => {
     if (isShaking) {

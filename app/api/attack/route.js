@@ -1,5 +1,6 @@
 import Pusher from 'pusher'
 
+import process from 'process'
 
 const pusherServer = new Pusher({
   appId: process.env.PUSHER_APP_ID,

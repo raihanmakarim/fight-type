@@ -1,4 +1,3 @@
-import { pusher } from '../../../helper/pusher'
 import Pusher from 'pusher-js';
 import process from "process";
 
