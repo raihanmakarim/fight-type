@@ -13,7 +13,7 @@ import Image from 'next/image';
 import Opponent_iddle from "../../public/Opponent_iddle.png";
 import Opponent_jab from "../../public/Opponent_jab.png";
 import Opponent_prepare_jab from "../../public/Opponent_prepare_jab.png";
-
+import { getLocalQuoteWords } from "../data/typingTexts"; 
 
 
 const RANDOM_QUOTE_API_URL = "https://api.quotable.io/random?minLength=400&maxLength=600";
@@ -312,22 +312,16 @@ const TypeFastGame = () => {
     );
   };
 
-  const getRandomQuote = async () => {
-    try {
-      const response = await fetch(RANDOM_QUOTE_API_URL);
-      const data = await response.json();
-      const content = data.content
-        .toLowerCase()
-        .replace(/[^\w\s]+/g, '') // Remove symbols and punctuation
-        .split(/\s+/) ;
-      quoteContentRef.current = content;
-      return Promise.resolve(content);
-    }
-    catch (error) {
-      console.error("Error fetching random quote:", error);
-      return Promise.reject(error);
-    }
-  };
+const getRandomQuote = async () => {
+  try {
+    const content = getLocalQuoteWords();
+    quoteContentRef.current = content;
+    return Promise.resolve(content);
+  } catch (error) {
+    console.error("Error getting local quote:", error);
+    return Promise.reject(error);
+  }
+};
 
 
 
