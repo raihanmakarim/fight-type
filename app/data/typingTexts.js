@@ -1,8 +1,4 @@
-// src/data/typingTexts.ts
-// A local pool of sentences for the typing game.
-// Safe for client use, no network calls.
-
-export const TYPING_TEXTS: string[] = [
+export const TYPING_TEXTS = [
   "The quickest way to get better at typing is to practice a little every day",
   "Small consistent improvements beat big irregular efforts over the long run",
   "Focus on accuracy first and let your speed rise naturally as you gain confidence",
@@ -92,11 +88,8 @@ export const TYPING_TEXTS: string[] = [
   "Keep going you are closer than you think and calmer than you feel"
 ];
 
-// Helper returns tokenized words like your API version:
-// - lowercase
-// - strips punctuation
-// - splits on whitespace
-export function getLocalQuoteWords(): string[] {
+
+export function getLocalQuoteWords() {
   const raw = TYPING_TEXTS[Math.floor(Math.random() * TYPING_TEXTS.length)];
   return raw
     .toLowerCase()

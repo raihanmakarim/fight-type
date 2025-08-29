@@ -16,7 +16,6 @@ import Opponent_prepare_jab from "../../public/Opponent_prepare_jab.png";
 import { getLocalQuoteWords } from "../data/typingTexts"; 
 
 
-const RANDOM_QUOTE_API_URL = "https://api.quotable.io/random?minLength=400&maxLength=600";
 
 
 
